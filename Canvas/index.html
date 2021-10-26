@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+    <title>Test-Canvas</title>
+</head>
+<body>
+    <div>
+        <div>
+            <label class="btn btn-primary mt-2" for="inputfile">
+                <input type="file" name="inputfile" id="inputfile" class="d-none">
+                <i class="fas fa-file-import mr-1"></i>
+                Select File
+            </label>
+            <button type="button" class="btn btn-dark" id="toggle_grid_btn">Toggle Grid</button>
+            <button type="button" class="btn btn-dark" id="restart_sim_btn">Restart Sim</button>
+            <button type="button" class="btn btn-dark" id="toggle_pause_btn">Toggle Pause</button>
+            <label>Scale: <input type="number" id="scale_input"></label>
+            <button type="button" class="btn btn-dark" id="submit_scale_btn">Submit</button>
+            <div class="col-2 input-group mb-3">
+                <div class="input-group-prepend">
+                    <button class="btn btn-dark btn-sm" id="minus-btn"><i class="fa fa-minus"></i></button>
+                </div>
+                <input type="number" id="speed-input" disabled class="form-control form-control-sm" value="10000" min="0">
+                <div class="input-group-prepend">
+                    <button class="btn btn-dark btn-sm" id="plus-btn"><i class="fa fa-plus"></i></button>
+                </div>
+            </div>
+        </div>
+        <div>
+            <canvas></canvas>
+        </div> 
+    </div>
+    <script src="canvas.js"></script>
+</body>
+</html>
