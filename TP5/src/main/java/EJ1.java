@@ -1,26 +1,29 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.InitialConditions;
-import models.Person;
-import oscillators.*;
 import simulation.SimulationImpl;
 import simulation.Simulation;
 
 import java.io.*;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
 public class EJ1 {
 
     private static double dt = 1e-5;
-    private static double gap;
-    private static double t_f;
+    private static double dt2 = 1e-2;
+    private static double gap = 1.2;
+    private static double t_f = 100;
+    private static double beta = 0.9;
+    private static double tau = 0.5;
+    private static double rMin = 0.15;
+    private static double rMax = 0.32;
+    private static double vdMax = 2;
+    private static double vEscape = 1.55;
     private static String initialConditionsFilename;
     private static String simulationFilename;
 
     public static void main(String[] args) throws IOException {
 
-        if (args.length != 4) {
+        if (args.length != 2) {
             System.err.println("Wrong amount of arguments");
             return;
         }
@@ -33,9 +36,7 @@ public class EJ1 {
     public static InitialConditions parseArguments(String[] args) {
 
         initialConditionsFilename = args[0];
-        gap = Double.parseDouble(args[1]);
-        t_f = Integer.parseInt(args[2]);
-        simulationFilename = args[3];
+        simulationFilename = args[1];
 
         try {
             final ObjectMapper mapper = new ObjectMapper();
@@ -51,16 +52,24 @@ public class EJ1 {
     }
 
     public static void doSimulation(InitialConditions conds) throws IOException {
-        IntegrationScheme beemanScheme = new Beeman(mass, k, gamma, new Person(r_0, v_0));
-        Simulation simulations = new SimulationImpl(beemanScheme, simulationFilename, conds, gap, dt, t_f);
 
+        dt = rMin / 2*Math.max(vdMax, vEscape);
+        dt2 = 10 * dt;
+        t_f = 1000 * dt;
+        Simulation simulations = new SimulationImpl(simulationFilename, conds, gap, dt, t_f, beta, tau, rMin, rMax, vdMax, vEscape);
+
+        double counter = 0;
         simulations.initializeSimulation();
         while (!simulations.isFinished()) {
             simulations.nextIteration();
-            try {
-                simulations.printIteration();
-            } catch (IOException e) {
-                e.printStackTrace();
+            counter += dt;
+            if(counter >= dt2){
+                try {
+                    simulations.printIteration();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                counter = 0;
             }
         }
         simulations.terminate();

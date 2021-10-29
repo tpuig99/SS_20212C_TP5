@@ -3,74 +3,39 @@ var selected_color = '#f05800'
 var close_color = '#8aff78'
 var main_color = '#f5f5f5'
 var close_circles = []
-var solarSistemSize = 3e9
-var canvasPixelSize = 1000
-var scale = solarSistemSize/canvasPixelSize
-var invScale = 1/scale
+var scale = 9000
 var mustDrawGrid = false
 var mustDrawRc = false
 var mustColor = false
 var drawArrows = false
 var paused = false
-var asd = 500
-
-                // sun      eatch      mars   ship 
-const colors = ['#fffc3b','#3b68ff','#ff5b3b','#ebebeb','#f5cf5f','#f5b45f']
-// const radius = [      30,          10,    5,    2,    15,    20]
-//const radius = [      20,          10,    5,    2,    15,    14]
-const radius = [      100000*invScale*asd,   6371*invScale*asd,  3390*invScale*asd,    2*invScale*asd,    58232*invScale*asd,    69911*invScale*asd]
-
-data = {
-    body0:{
-        name: "sun",
-        radius: 100000*invScale*asd,
-        color: '#fffc3b'
-    },
-    body1:{
-        name: "earth",
-        radius: 6371*invScale*asd,
-        color: '#3b68ff'
-    },
-    body2:{
-        name: "mars",
-        radius: 3390*invScale*asd,
-        color: '#ff5b3b'
-    },
-    body3:{
-        name: "ship",
-        radius: 3390*invScale*asd,
-        color: '#ebebeb'
-    },
-    body4:{
-        name: "jup",
-        radius: 58232*invScale*asd,
-        color: '#f5cf5f'
-    },
-    body5:{
-        name: "sat",
-        radius: 69911*invScale*asd,
-        color: '#f5b45f'
-    }
-}
 class Circle {
-    constructor(id, x, y) {
+    constructor(id, x, y, radius, vx, vy) {
         this.id = id;
         this.x = x;
         this.y = y;
-        this.r = color = data['body'+this.id].radius;
+        this.radius = radius;
+        this.vx = vx;
+        this.vy = vy;
     }
 
     draw() {
-        this.r = color = data['body'+this.id].radius;
         c.beginPath();
-        c.arc(this.x, this.y, this.r, 0, Math.PI * 2, false);
-        c.fillStyle = data['body'+this.id].color; 
+        c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+        c.fillStyle = selected_color; 
         c.fill();
+
+        c.font = `${this.radius * 0.7}pt Calibri`;
+        c.fillStyle = '#000000';
+        c.textAlign = 'center';
+        c.fillText(this.id, this.x, this.y+3);
     }
 
-    update(x, y) {
+    update(x, y, v, a) {
         this.x = x
         this.y = y
+        this.v = v
+        this.a = a
         this.draw();
     }
 }
@@ -90,6 +55,31 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 var c = canvas.getContext('2d'); 
 
+//-------------- set up events------------------
+
+var mouse = {
+    x: undefined,
+    y: undefined
+}
+
+window.addEventListener('mousemove', 
+    function(event){
+    mouse.x = event.x;
+    mouse.y = event.y;
+});
+
+window.addEventListener('click', 
+    function(event){
+        var rect = canvas.getBoundingClientRect();
+        if(simulation.circles){
+            for(circle of simulation.circles){
+                if(isInside(circle.id, circle.x * scale, circle.y * scale, circle.r * scale, mouse.x - rect.left, mouse.y - rect.top)){
+                    selected = circle.id
+                    init()
+                }
+            }
+        }
+});
 //----------------buttons-----------------------
 
 document.getElementById('plus-btn').addEventListener("click", function() {
@@ -136,7 +126,7 @@ var circleArray = [];
 let frames = 1
 let curr_frame = 0
 let requestID = null
-let framerate = 0.0025
+let framerate = 10000
 let frameSize =  1/framerate
 let time = 0
 let lastTime = time
@@ -157,47 +147,37 @@ function init(){
     frames = simulation.events.length-1
     curr_frame = 0
 
-    canvas.width = solarSistemSize * invScale;
-    canvas.height = solarSistemSize * invScale;
+    canvas.width = simulation.Lx * scale;
+    canvas.height = simulation.Ly * scale;
 
-    let i = 0;
+    drawBorders()
+
     for (circle of simulation.events[curr_frame].circles){
-        circleArray.push(new Circle(circle.id, (circle.x*invScale + canvas.width/2), (circle.y*invScale + canvas.height/2)));
-        i++;
+        circleArray.push(new Circle(circle.id, circle.x * scale, circle.y * scale, circle.r * scale, circle.vx * scale, circle.xy  * scale));
     }
 
     for(circle of circleArray){
         circle.draw()
     }
 
-    console.log(circleArray)
-
     if(frames > 1)
         animate();
 }
 
 function animate(){
-    // console.log(circleArray)
-    // c.clearRect(0,0,canvas.width, canvas.height);
-    c.fillStyle = 'rgba(58, 58, 58, .05)';
-    c.fillRect(0, 0, canvas.width, canvas.height);
+    c.clearRect(0,0,simulation.Lx * scale, simulation.Ly * scale);
+    drawBorders()
 
     if(paused){
         for(let j=0; j<simulation.events[curr_frame].circles.length;j++){
             let currCircle = simulation.events[curr_frame].circles[j]
-            if(simulation.events[curr_frame].circles.length > circleArray.length){
-                console.log(currCircle)
-                circleArray.push(new Circle(2, (currCircle.x*invScale + canvas.width/2), (currCircle.y*invScale + currCircle.height/2)));
-            }else{
-                circleArray[j].update((currCircle.x*invScale + canvas.width/2), (currCircle.y*invScale + canvas.height/2))
-            }
+            circleArray[j].update(currCircle.x * scale, currCircle.y * scale, currCircle.vx * scale, currCircle.vy * scale)
         }
         requestID = requestAnimationFrame(animate);
     } else{
         while(time < lastTime + frameSize){
             if(curr_frame < simulation.events.length-1){
-                // time += simulation.events[curr_frame].t
-                time += 5
+                time += simulation.events[curr_frame].t
                 curr_frame++
                 frames--
             }else{
@@ -208,24 +188,14 @@ function animate(){
         lastTime = time
     
         if(valid){
-            console.log(simulation.events[curr_frame].circles)
             for(let j=0; j<simulation.events[curr_frame].circles.length;j++){
                 let currCircle = simulation.events[curr_frame].circles[j]
-                if(simulation.events[curr_frame].circles.length != circleArray.length){
-                    //spaceship = simulation.events[curr_frame].circles[simulation.events[curr_frame].circles.length-1]
-                    for(body of simulation.events[curr_frame].circles){
-                        if(body.id == 3){
-                            spaceship = body    
-                            circleArray.push(new Circle(3, (spaceship.x*invScale + canvas.width/2), (spaceship.y*invScale + spaceship.height/2)  , radius[3]));
-                        }
-                    }
-                }else{
-                    circleArray[j].update((currCircle.x*invScale + canvas.width/2), (currCircle.y*invScale + canvas.height/2))
-                }
+                circleArray[j].update(currCircle.x * scale, currCircle.y * scale, currCircle.vx * scale, currCircle.vy * scale)
             }
         }
     
         console.log('Time: ', time)
+    
     
         if(frames > 0){
             requestID = requestAnimationFrame(animate);
@@ -236,7 +206,29 @@ function animate(){
             lastTime = 0
             requestID =requestAnimationFrame(animate);
             valid = true
-            init()
         }
     }
+}
+
+function drawBorders(){
+    c.beginPath();
+    c.moveTo(0, 0);
+    c.lineTo(0, simulation.Ly * scale);
+    c.lineTo(simulation.Lx * scale, simulation.Ly * scale);
+    c.lineTo(simulation.Lx * scale, 0);
+    c.lineTo(0, 0);
+
+    var wallSize = simulation.Lx* (1-simulation.gap)/2
+    var gapSize =  simulation.gap * simulation.Lx
+    console.log(simulation.Lx + simulation.rmax)
+    c.moveTo((simulation.Ly/ 2) * scale, 0);
+    c.lineTo((simulation.Ly/ 2) * scale , (wallSize) * scale );
+    c.stroke();
+
+    c.moveTo((simulation.Ly/ 2) * scale, (simulation.Lx) * scale);
+    c.lineTo((simulation.Ly/ 2) * scale, (wallSize+ gapSize) * scale );
+    c.stroke();
+
+    c.strokeStyle = "#FFFFFF"
+    c.stroke();
 }

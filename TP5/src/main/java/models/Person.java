@@ -1,65 +1,58 @@
 package models;
 
-import java.awt.geom.Point2D;
-import java.nio.channels.Pipe;
+import io.Circle;
 
 public class Person {
 
-    private Point2D r;
-    private Point2D e;
-    private double v;
-    private double radius;
+    private Versor e;
+    private Vector x;
+    private double vd;
+    private double r;
 
-    public Person(Point2D r, Point2D e, double v, double radius) {
-        this.r = r;
+    public Person(Vector x, Versor e, double r,double vd) {
+        this.x = x;
         this.e = e;
-        this.v = v;
-        this.radius = radius;
-    }
-
-    public Point2D calculateV() {
-        return new Point2D.Double(e.getX()*v, e.getY()*v);
-    }
-
-    public Point2D getR() {
-        return r;
-    }
-
-    public void setR(Point2D r) {
         this.r = r;
+        this.vd = vd;
     }
 
-    public Point2D getE() {
+    public Vector getX() {
+        return x;
+    }
+
+    public void setX(Vector x) {
+        this.x = x;
+    }
+
+    public Versor getE() {
         return e;
     }
 
-    public void setE(Point2D e) {
+    public void setE(Versor e) {
         this.e = e;
     }
 
-    public double getV() {
-        return v;
+    public double getVd() {
+        return vd;
     }
 
-    public void setV(double v) {
-        this.v = v;
+    public void setVd(double vd) {
+        this.vd = vd;
+    }
+    public double getR() {
+        return r;
     }
 
-    public double getRadius() {
-        return radius;
+    public void setR(double r) {
+        this.r = r;
     }
 
-    public void setRadius(double radius) {
-        this.radius = radius;
+    public void updatePosition (double x, double y) {
+        this.x.setX(x);
+        this.x.setY(y);
     }
 
-    @Override
-    public String toString() {
-        return "Person{" +
-                "r=" + r +
-                ", e=" + e +
-                ", v=" + v +
-                ", radius=" + radius +
-                '}';
+    public Circle getAsCircle(){
+        return new Circle(x.getX(), x.getY(), r);
     }
 }

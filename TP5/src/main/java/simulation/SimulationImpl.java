@@ -1,22 +1,25 @@
 package simulation;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.Circle;
+import io.Event;
 import io.InitialConditions;
 
+import io.Output;
 import models.Person;
-import oscillators.IntegrationScheme;
-
-import java.awt.geom.Point2D;
+import models.Vector;
+import models.Versor;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SimulationImpl implements Simulation {
 
-    private final IntegrationScheme scheme;
     private final String simulationFilename;
     private final double gap;
     private final InitialConditions conds;
@@ -29,8 +32,10 @@ public class SimulationImpl implements Simulation {
     private FileWriter fileWriter;
     private  PrintWriter printWriter;
 
-    public SimulationImpl(IntegrationScheme scheme, String simulationFilename, InitialConditions conds, double gap, double dt, double t_f) {
-        this.scheme = scheme;
+    private List<Event> events;
+    private Resolver cr;
+
+    public SimulationImpl(String simulationFilename, InitialConditions conds, double gap, double dt, double t_f, double beta, double tau, double rMin, double rMax, double vdMax, double vExcape) {
         this.simulationFilename = simulationFilename;
         this.conds = conds;
         this.gap = gap;
@@ -38,63 +43,53 @@ public class SimulationImpl implements Simulation {
         this.t_f = t_f;
         this.t = 0;
         this.personlist = new ArrayList<>();
+        this.cr = new Resolver(beta, tau, rMin, rMax, vdMax, vExcape, gap, conds);
     }
 
     @Override
     public void initializeSimulation() throws IOException {
+        events = new ArrayList<>();
         fileWriter = new FileWriter(simulationFilename, false);
         printWriter = new PrintWriter(new BufferedWriter(fileWriter));
 
         initializePersons();
 
         printWriter.println(t);
-        printWriter.println(scheme.getOscillator());
     }
 
     private void initializePersons(){
         for(Circle circle: conds.getCircles()){
-            Point2D r = new Point2D.Double(circle.getX(), circle.getY());
-            Point2D e = calculateDesiredVersor(r, gap, conds.getLx(), conds.getLy(), circle.getR());
-            Person newPerson = new Person(r, e, 0, circle.getR());
+            Vector x = new Vector(circle.getX(), circle.getY());
+            Versor e = cr.calculateDesiredVersor(x);
+            Person newPerson = new Person(x, e, circle.getR(), 0);
             personlist.add(newPerson);
         }
     }
 
-    private Point2D calculateDesiredVersor(Point2D r, double gap, double lx, double ly, double radius) {
-        Point2D targetPoint;
-        if(r.getX() < (lx/2 - gap/2)){
-            targetPoint = new Point2D.Double((lx/2 - gap/2) + radius,ly/2);
-        }else if(r.getX() > (lx/2 + gap/2)){
-            targetPoint = new Point2D.Double((lx/2 + gap/2) - radius,ly/2);
-        }else{
-            targetPoint = new Point2D.Double(r.getX(),ly/2);
-        }
-        return calculateVersorFromPointToPoint(r, targetPoint);
-    }
-
-    private Point2D calculateVersorFromPointToPoint(Point2D p1, Point2D p2){
-        double x = p1.getX()-p2.getX();
-        double y = p1.getY()-p2.getY();
-        double mod = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
-        return new Point2D.Double(x/mod, y/mod);
-    }
-
     @Override
     public void nextIteration() {
-        double r = scheme.calculatePosition(dt);
-        double v = scheme.calculateVelocity(dt);
-        scheme.updateOscillator(r, v);
-
+        List<Person> newPersonList = new ArrayList<>(personlist);
+        for(Person person: newPersonList){
+            List<Person> collisions = cr.calculateParticleCollision(person, personlist);
+            if(collisions.size() == 0){
+                cr.updateVelocityIfNotCollision(person);
+                cr.updatePosition(person, dt);
+                cr.updateRadiusIfNotCollision(person, dt);
+            }else{
+                cr.updateVelocityInCollisionWithPersons(person, collisions);
+                cr.updatePosition(person, dt);
+                cr.updateRadiusInCollisionWithPerson(person);
+            }
+        }
+        personlist = newPersonList;
         t += dt;
-
-        analytics.add(analyticSolution.calculatePosition(t));
-        values.add(scheme.getOscillator().getR());
     }
 
     @Override
     public void printIteration() {
-        printWriter.println((float) t);
-        printWriter.println(scheme.getOscillator());
+        List<Circle> c = personlist.stream().map(Person::getAsCircle).collect(Collectors.toList());
+        Event event = new Event(c,dt,t);
+        events.add(event);
     }
 
     @Override
@@ -104,6 +99,13 @@ public class SimulationImpl implements Simulation {
 
     @Override
     public void terminate() throws IOException {
+        try {
+            final Output output = new Output(events);
+            final ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(Paths.get(simulationFilename.replace(".txt", "_light.json")).toFile(), output);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         printWriter.close();
         fileWriter.close();
     }
