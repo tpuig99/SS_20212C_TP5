@@ -11,9 +11,9 @@ public class Vector {
         this.y = y;
     }
 
-    public Vector (double x, double y, double module) {
-        this.x = x * module;
-        this.y = y * module;
+    public Vector () {
+        this.x = 0;
+        this.y = 0;
     }
 
     public double getX() {

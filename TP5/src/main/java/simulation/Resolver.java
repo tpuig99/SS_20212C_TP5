@@ -52,7 +52,7 @@ public class Resolver {
 
     public void updateVelocityInCollisionWithPersons(Person p1, List<Person> other) {
         p1.setVd(vEscape);
-        Versor ve = new Versor(0,0);
+        Versor ve = new Versor();
         for (Person p : other) {
             Versor aux = calculateVersorFromPointToPoint(p.getX(),p1.getX());
             Vector added = Vector.add(ve,aux);
