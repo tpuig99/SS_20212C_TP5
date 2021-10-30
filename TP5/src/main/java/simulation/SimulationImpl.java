@@ -49,12 +49,11 @@ public class SimulationImpl implements Simulation {
     @Override
     public void initializeSimulation() throws IOException {
         events = new ArrayList<>();
-        fileWriter = new FileWriter(simulationFilename, false);
+        fileWriter = new FileWriter(simulationFilename.replace(".txt", ".xyz"), false);
         printWriter = new PrintWriter(new BufferedWriter(fileWriter));
 
         initializePersons();
-
-        printWriter.println(t);
+        printXYZ(conds.getCircles());
     }
 
     private void initializePersons(){
@@ -89,7 +88,17 @@ public class SimulationImpl implements Simulation {
     public void printIteration() {
         List<Circle> c = personlist.stream().map(Person::getAsCircle).collect(Collectors.toList());
         Event event = new Event(c,dt,t);
+        printXYZ(c);
         events.add(event);
+    }
+
+    private void printXYZ(List<Circle> circles) {
+        printWriter.println(circles.size());
+        String headerProperties = String.format("Lattice=\"0.0 %s 0.0 0.0 %s 0.0 0.0 0.0\" Properties=pos:R:2:radius:R:1", conds.getLy(), conds.getLx());
+        printWriter.println(headerProperties);
+        for (Circle c : circles) {
+            printWriter.println(c.xyz());
+        }
     }
 
     @Override

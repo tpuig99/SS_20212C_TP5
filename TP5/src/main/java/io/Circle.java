@@ -2,7 +2,11 @@ package io;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class Circle {
     @JsonProperty("x")
@@ -43,5 +47,9 @@ public class Circle {
 
     public void setR(double r) {
         this.r = r;
+    }
+
+    public String xyz() {
+        return String.format("%s %s %s", x, y, r);
     }
 }
