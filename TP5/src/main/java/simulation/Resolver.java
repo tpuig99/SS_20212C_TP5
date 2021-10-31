@@ -66,21 +66,21 @@ public class Resolver {
     }
 
     public Versor calculateDesiredVersor(Vector pos) {
-        Versor targetPoint;
+        Vector targetPoint;
         double xe1 = (conds.getLx()/2 - gap/2);
         double xe2 = (conds.getLx()/2 + gap/2);
         double L = xe2 - xe1;
         double x = pos.getX();
-
-        if(pos.getY() >= conds.getLy()/2){
-            targetPoint = new Versor(x, conds.getLy());
+        double e = conds.getLy() * 0;
+        if(pos.getY() + e >= conds.getLy()/2){
+            targetPoint = new Vector(x, conds.getLy());
         }else{
             if(x < (xe1 + 0.2*L) || x > (xe1 + 0.8*L)){
                 double max = xe1+0.8*L;
                 double min = xe1+0.2*L;
-                targetPoint = new Versor((Math.random()*(max-min))+min, conds.getLy()/2);
+                targetPoint = new Vector((Math.random()*(max-min))+min, conds.getLy()/2);
             }else{
-                targetPoint = new Versor(x,conds.getLy()/2);
+                targetPoint = new Vector(x,conds.getLy()/2);
             }
         }
 
@@ -88,7 +88,7 @@ public class Resolver {
     }
 
     private Versor calculateVersorFromPointToPoint(Vector p1, Vector p2){
-        return new Versor(p1.getX()-p2.getX(), p1.getY()-p2.getY());
+        return new Versor(p2.getX()-p1.getX(), p2.getY()-p1.getY());
     }
 
 
@@ -130,7 +130,7 @@ public class Resolver {
     }
 
     private Wall checkCollisionInY(Person p1) {
-        boolean ifNotInGap = (p1.getX().getX() - p1.getR())<(conds.getLy()/2-gap/2)|| (p1.getX().getX() + p1.getR())>(conds.getLy()/2+gap/2);
+        boolean ifNotInGap = (p1.getX().getX() - p1.getR())<(conds.getLx()/2-gap/2)|| (p1.getX().getX() + p1.getR())>(conds.getLx()/2+gap/2);
         if(ifNotInGap && p1.getX().getY()<conds.getLy()/2 && conds.getLy()/2 - p1.getX().getY() < p1.getR()){
             return Wall.B;
         }
