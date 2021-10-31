@@ -17,7 +17,7 @@ public class EJ1 {
     private static double rMin = 0.15;
     private static double rMax = 0.32;
     private static double vdMax = 2;
-    private static double vEscape = vdMax;
+    private static double vEscape = 2;
     private static String initialConditionsFilename;
     private static String simulationFilename;
     private static String subcase;
