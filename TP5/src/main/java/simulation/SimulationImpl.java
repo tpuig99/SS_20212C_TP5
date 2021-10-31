@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 public class SimulationImpl implements Simulation {
 
     private final String simulationFilename;
+    private final String subcase;
     private final double gap;
     private final InitialConditions conds;
     private final double dt;
@@ -30,14 +31,14 @@ public class SimulationImpl implements Simulation {
 
     private List<Person> personlist;
 
-    private FileWriter fileWriter;
     private  PrintWriter printWriter;
 
     private List<Event> events;
     private Resolver cr;
 
-    public SimulationImpl(String simulationFilename, InitialConditions conds, double gap, double dt, double t_f, double beta, double tau, double rMin, double rMax, double vdMax, double vExcape) {
+    public SimulationImpl(String simulationFilename, String subcase, InitialConditions conds, double gap, double dt, double t_f, double beta, double tau, double rMin, double rMax, double vdMax, double vExcape) {
         this.simulationFilename = simulationFilename;
+        this.subcase = subcase;
         this.conds = conds;
         this.gap = gap;
         this.dt = dt;
@@ -50,8 +51,7 @@ public class SimulationImpl implements Simulation {
     @Override
     public void initializeSimulation() throws IOException {
         events = new ArrayList<>();
-        fileWriter = new FileWriter(simulationFilename.replace(".txt", ".xyz"), false);
-        printWriter = new PrintWriter(new BufferedWriter(fileWriter));
+        printWriter = new PrintWriter(new BufferedWriter(new FileWriter(simulationFilename + ".xyz", false)));
 
         initializePersons();
         printXYZ(conds.getCircles());
@@ -115,11 +115,10 @@ public class SimulationImpl implements Simulation {
         try {
             final Output output = new Output(events, conds.getLx(), conds.getLy(),gap);
             final ObjectMapper mapper = new ObjectMapper();
-            mapper.writeValue(Paths.get(simulationFilename.replace(".txt", "_light.json")).toFile(), output);
+            mapper.writeValue(Paths.get(simulationFilename + "_light.json").toFile(), output);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
         printWriter.close();
-        fileWriter.close();
     }
 }

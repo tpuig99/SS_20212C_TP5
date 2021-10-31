@@ -20,6 +20,7 @@ public class EJ1 {
     private static double vEscape = 1.55;
     private static String initialConditionsFilename;
     private static String simulationFilename;
+    private static String subcase;
 
     public static void main(String[] args) throws IOException {
 
@@ -37,6 +38,8 @@ public class EJ1 {
 
         initialConditionsFilename = args[0];
         simulationFilename = args[1];
+        String[] splitted = initialConditionsFilename.split("_");
+        subcase = splitted[splitted.length - 1].substring(0, 1);
 
         try {
             final ObjectMapper mapper = new ObjectMapper();
@@ -56,7 +59,10 @@ public class EJ1 {
         dt = rMin / (2*Math.max(vdMax, vEscape));
         dt2 = dt;
         t_f = 1000 * dt;
-        Simulation simulations = new SimulationImpl(simulationFilename, conds, gap, dt, t_f, beta, tau, rMin, rMax, vdMax, vEscape);
+
+        simulationFilename = simulationFilename + "_" + gap + "_" + conds.getN() + "_" + subcase;
+
+        Simulation simulations = new SimulationImpl(simulationFilename, subcase , conds, gap, dt, t_f, beta, tau, rMin, rMax, vdMax, vEscape);
 
         double counter = 0;
         simulations.initializeSimulation();
