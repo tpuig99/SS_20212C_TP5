@@ -184,15 +184,15 @@ function drawBorders(){
     c.lineTo(simulation.Lx * scale, 0);
     c.lineTo(0, 0);
 
-    var wallSize = simulation.Lx* (1-simulation.gap)/2
-    var gapSize =  simulation.gap * simulation.Lx
-    console.log(simulation.Lx + simulation.rmax)
-    c.moveTo((simulation.Ly/ 2) * scale, 0);
-    c.lineTo((simulation.Ly/ 2) * scale , (wallSize) * scale );
+    var wallSize = simulation.Lx/2 - simulation.gap/2
+    var gapSize =  simulation.gap
+
+    c.moveTo(0, (simulation.Ly/ 2) * scale);
+    c.lineTo((wallSize) * scale, (simulation.Ly/ 2) * scale);
     c.stroke();
 
-    c.moveTo((simulation.Ly/ 2) * scale, (simulation.Lx) * scale);
-    c.lineTo((simulation.Ly/ 2) * scale, (wallSize+ gapSize) * scale );
+    c.moveTo((simulation.Lx) * scale, (simulation.Ly/ 2) * scale);
+    c.lineTo((wallSize + gapSize) * scale ,(simulation.Ly/ 2) * scale);
     c.stroke();
 
     c.strokeStyle = "#FFFFFF"
