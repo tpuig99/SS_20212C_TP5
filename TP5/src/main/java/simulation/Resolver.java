@@ -72,8 +72,8 @@ public class Resolver {
         double L = xe2 - xe1;
         double x = pos.getX();
 
-        if(pos.getY() <= conds.getLy()){
-            targetPoint = new Versor(x, 0);
+        if(pos.getY() >= conds.getLy()/2){
+            targetPoint = new Versor(x, conds.getLy());
         }else{
             if(x < (xe1 + 0.2*L) || x > (xe1 + 0.8*L)){
                 double max = xe1+0.8*L;
