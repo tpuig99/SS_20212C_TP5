@@ -18,7 +18,17 @@ def parseArgs():
 	
 	# fileName = ".\TP5\sim1_light.json"
 	fileName = sys.argv[1];
-	
+
+def plotAcum():
+	data = np.genfromtxt(fileName, delimiter=",", names=["t", "deltaN", "acumN"])
+
+	plt.plot(data['t'], data['acumN'],'r.-')
+	plt.grid(b=True, which='both', axis='both')
+	plt.ylabel('Cantidad de Partículas que Salieron')
+	plt.xlabel('Tiempo (s)')
+	plt.show()
+
+
 def plotFlow():
 	data = np.genfromtxt(fileName, delimiter=",", names=["t", "deltaN", "acumN"])
 
@@ -32,4 +42,4 @@ def plotFlow():
 
 if __name__ == "__main__":
 	parseArgs()
-	plotFlow()
+	plotAcum()
