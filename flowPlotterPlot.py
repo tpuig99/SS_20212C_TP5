@@ -22,10 +22,10 @@ def parseArgs():
 def plotFlow():
 	data = np.genfromtxt(fileName, delimiter=",", names=["t", "deltaN", "acumN"])
 
-	plt.plot(data['t'], data['acumN'],'r.-')
+	plt.plot(data['t'], data['deltaN'],'r.-')
 	plt.grid(b=True, which='both', axis='both')
-	plt.ylabel('Distancia a Jupiter (Km)')
-	plt.xlabel('Dia de despegue (Dias)')
+	plt.ylabel('Caudal (particulas/s)')
+	plt.xlabel('Tiempo (s)')
 	plt.show()
 
 	return
