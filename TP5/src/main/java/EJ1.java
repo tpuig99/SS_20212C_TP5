@@ -8,16 +8,16 @@ import java.nio.file.Paths;
 
 public class EJ1 {
 
-    private static double dt = 1e-5;
-    private static double dt2 = 1e-2;
+    private static double dt;
+    private static double dt2;
+    private static double t_f;
     private static double gap = 1.2;
-    private static double t_f = 100;
     private static double beta = 0.9;
     private static double tau = 0.5;
     private static double rMin = 0.15;
     private static double rMax = 0.32;
     private static double vdMax = 2;
-    private static double vEscape = 1.55;
+    private static double vEscape = vdMax;
     private static String initialConditionsFilename;
     private static String simulationFilename;
     private static String subcase;
