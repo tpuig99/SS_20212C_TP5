@@ -112,7 +112,7 @@ public class SimulationImpl implements Simulation {
     @Override
     public void terminate() throws IOException {
         try {
-            final Output output = new Output(events);
+            final Output output = new Output(events, conds.getLx(), conds.getLy(),gap);
             final ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(Paths.get(simulationFilename.replace(".txt", "_light.json")).toFile(), output);
         } catch (Exception ex) {
