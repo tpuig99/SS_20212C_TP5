@@ -53,7 +53,7 @@ public class EJ1 {
 
     public static void doSimulation(InitialConditions conds) throws IOException {
 
-        dt = rMin / 2*Math.max(vdMax, vEscape);
+        dt = rMin / (2*Math.max(vdMax, vEscape));
         dt2 = dt;
         t_f = 1000 * dt;
         Simulation simulations = new SimulationImpl(simulationFilename, conds, gap, dt, t_f, beta, tau, rMin, rMax, vdMax, vEscape);
