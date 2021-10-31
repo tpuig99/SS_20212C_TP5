@@ -95,10 +95,12 @@ public class Resolver {
     public List<Person> calculateParticleCollision(Person p1, List<Person> personList) {
         List<Person> collisions = new ArrayList<>();
         for (Person p:personList) {
-            double d = Point2D.distance(p1.getX().getX(), p1.getX().getY(), p.getX().getX(), p.getX().getY())
-                    - p.getR() - p1.getR();
-            if( d < 0 ){
-                collisions.add(p);
+            if(!p1.equals(p)) {
+                double d = Point2D.distance(p1.getX().getX(), p1.getX().getY(), p.getX().getX(), p.getX().getY())
+                        - p.getR() - p1.getR();
+                if (d < 0) {
+                    collisions.add(p);
+                }
             }
         }
         Wall checkX = checkCollisionInX(p1);
