@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,17 +58,19 @@ public class SimulationImpl implements Simulation {
     }
 
     private void initializePersons(){
+        double id = 0;
         for(Circle circle: conds.getCircles()){
             Vector x = new Vector(circle.getX(), circle.getY());
             Versor e = cr.calculateDesiredVersor(x);
-            Person newPerson = new Person(x, e, circle.getR(), 0);
+            Person newPerson = new Person(id,x, e, circle.getR(), 0);
             personlist.add(newPerson);
+            id++;
         }
     }
 
     @Override
     public void nextIteration() {
-        List<Person> newPersonList = new ArrayList<>(personlist);
+        List<Person> newPersonList = personlist.stream().map(Person::clone).collect(Collectors.toList());
         for(Person person: newPersonList){
             List<Person> collisions = cr.calculateParticleCollision(person, personlist);
             if(collisions.size() == 0){

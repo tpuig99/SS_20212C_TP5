@@ -95,7 +95,7 @@ public class Resolver {
     public List<Person> calculateParticleCollision(Person p1, List<Person> personList) {
         List<Person> collisions = new ArrayList<>();
         for (Person p:personList) {
-            if(!p1.equals(p)) {
+            if(p1.getId() != p.getId()) {
                 double d = Point2D.distance(p1.getX().getX(), p1.getX().getY(), p.getX().getX(), p.getX().getY())
                         - p.getR() - p1.getR();
                 if (d < 0) {
@@ -105,16 +105,16 @@ public class Resolver {
         }
         Wall checkX = checkCollisionInX(p1);
         if(checkX == Wall.R){
-            collisions.add(new Person(new Vector(conds.getLx(),p1.getX().getY()),new Versor(0,0),0,0));
+            collisions.add(new Person(p1.getId(),new Vector(conds.getLx(),p1.getX().getY()),new Versor(0,0),0,0));
         } else if(checkX == Wall.L){
-            collisions.add(new Person(new Vector(0,p1.getX().getY()),new Versor(0,0),0,0));
+            collisions.add(new Person(p1.getId(),new Vector(0,p1.getX().getY()),new Versor(0,0),0,0));
         }
 
         Wall checkY = checkCollisionInY(p1);
         if(checkY == Wall.B){
-            collisions.add(new Person(new Vector(p1.getX().getX(),conds.getLy()/2),new Versor(0,0),0,0));
+            collisions.add(new Person(p1.getId(),new Vector(p1.getX().getX(),conds.getLy()/2),new Versor(0,0),0,0));
         } else if(checkY == Wall.T){
-            collisions.add(new Person(new Vector(p1.getX().getX(),0),new Versor(0,0),0,0));
+            collisions.add(new Person(p1.getId(),new Vector(p1.getX().getX(),0),new Versor(0,0),0,0));
         }
         return collisions;
     }

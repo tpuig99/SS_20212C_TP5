@@ -2,18 +2,24 @@ package models;
 
 import io.Circle;
 
-public class Person {
+public class Person implements Cloneable{
 
+    private double id;
     private Versor e;
     private Vector x;
     private double vd;
     private double r;
 
-    public Person(Vector x, Versor e, double r,double vd) {
+    public Person(double id,Vector x, Versor e, double r,double vd) {
+        this.id = id;
         this.x = x;
         this.e = e;
         this.r = r;
         this.vd = vd;
+    }
+
+    public double getId() {
+        return id;
     }
 
     public Vector getX() {
@@ -54,5 +60,15 @@ public class Person {
 
     public Circle getAsCircle(){
         return new Circle(x.getX(), x.getY(), r);
+    }
+
+
+    @Override
+    public Person clone() {
+        try {
+            return (Person) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }
