@@ -3,49 +3,38 @@ var selected_color = '#f05800'
 var close_color = '#8aff78'
 var main_color = '#f5f5f5'
 var close_circles = []
-var scale = 9000
+var scale = 20
 var mustDrawGrid = false
 var mustDrawRc = false
 var mustColor = false
 var drawArrows = false
 var paused = false
 class Circle {
-    constructor(id, x, y, radius, vx, vy) {
+    constructor(id, x, y, r) {
         this.id = id;
         this.x = x;
         this.y = y;
-        this.radius = radius;
-        this.vx = vx;
-        this.vy = vy;
+        this.r = r;
     }
 
     draw() {
         c.beginPath();
-        c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+        c.arc(this.x, this.y, this.r, 0, Math.PI * 2, false);
         c.fillStyle = selected_color; 
         c.fill();
 
-        c.font = `${this.radius * 0.7}pt Calibri`;
+        c.font = `${this.r * 0.7}pt Calibri`;
         c.fillStyle = '#000000';
         c.textAlign = 'center';
         c.fillText(this.id, this.x, this.y+3);
     }
 
-    update(x, y, v, a) {
+    update(x, y, r) {
         this.x = x
         this.y = y
-        this.v = v
-        this.a = a
+        this.r = r
         this.draw();
     }
-}
-
-function isInside(id, circle_x, circle_y, rad, x, y)
-{
-    if (((x - circle_x) * (x - circle_x) + (y - circle_y) * (y - circle_y)) <= (rad * rad))
-        return true;
-    else
-        return false;
 }
 
 //---------------Set up Canvas----------------
@@ -55,31 +44,6 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 var c = canvas.getContext('2d'); 
 
-//-------------- set up events------------------
-
-var mouse = {
-    x: undefined,
-    y: undefined
-}
-
-window.addEventListener('mousemove', 
-    function(event){
-    mouse.x = event.x;
-    mouse.y = event.y;
-});
-
-window.addEventListener('click', 
-    function(event){
-        var rect = canvas.getBoundingClientRect();
-        if(simulation.circles){
-            for(circle of simulation.circles){
-                if(isInside(circle.id, circle.x * scale, circle.y * scale, circle.r * scale, mouse.x - rect.left, mouse.y - rect.top)){
-                    selected = circle.id
-                    init()
-                }
-            }
-        }
-});
 //----------------buttons-----------------------
 
 document.getElementById('plus-btn').addEventListener("click", function() {
@@ -152,8 +116,10 @@ function init(){
 
     drawBorders()
 
+    let i = 0
     for (circle of simulation.events[curr_frame].circles){
-        circleArray.push(new Circle(circle.id, circle.x * scale, circle.y * scale, circle.r * scale, circle.vx * scale, circle.xy  * scale));
+        circleArray.push(new Circle(i, circle.x * scale, circle.y * scale, circle.r * scale));
+        i++;
     }
 
     for(circle of circleArray){
@@ -171,7 +137,7 @@ function animate(){
     if(paused){
         for(let j=0; j<simulation.events[curr_frame].circles.length;j++){
             let currCircle = simulation.events[curr_frame].circles[j]
-            circleArray[j].update(currCircle.x * scale, currCircle.y * scale, currCircle.vx * scale, currCircle.vy * scale)
+            circleArray[j].update(currCircle.x * scale, currCircle.y * scale, currCircle.r * scale)
         }
         requestID = requestAnimationFrame(animate);
     } else{
@@ -190,7 +156,7 @@ function animate(){
         if(valid){
             for(let j=0; j<simulation.events[curr_frame].circles.length;j++){
                 let currCircle = simulation.events[curr_frame].circles[j]
-                circleArray[j].update(currCircle.x * scale, currCircle.y * scale, currCircle.vx * scale, currCircle.vy * scale)
+                circleArray[j].update(currCircle.x * scale, currCircle.y * scale, currCircle.r * scale)
             }
         }
     
