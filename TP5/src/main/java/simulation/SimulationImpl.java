@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +26,7 @@ public class SimulationImpl implements Simulation {
     private final double dt;
     private final double t_f;
     private double t;
+    private double totalOuts;
 
     private List<Person> personlist;
 
@@ -43,6 +43,7 @@ public class SimulationImpl implements Simulation {
         this.dt = dt;
         this.t_f = t_f;
         this.t = 0;
+        this.totalOuts = 0;
         this.personlist = new ArrayList<>();
         this.cr = new Resolver(beta, tau, rMin, rMax, vdMax, vExcape, gap, conds);
     }
@@ -86,6 +87,17 @@ public class SimulationImpl implements Simulation {
         }
         personlist = newPersonList;
         t += dt;
+        checkOuts();
+    }
+
+    private void checkOuts() {
+        for(Person p :personlist){
+            if(!p.isOut() && p.getX().getY()>conds.getLy()/2){
+                p.setOut(true);
+                p.setT_out(t);
+                totalOuts ++;
+            }
+        }
     }
 
     @Override
@@ -107,7 +119,7 @@ public class SimulationImpl implements Simulation {
 
     @Override
     public boolean isFinished() {
-        return t_f < t;
+        return totalOuts == personlist.size();
     }
 
     @Override

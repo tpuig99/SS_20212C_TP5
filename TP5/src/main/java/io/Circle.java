@@ -15,11 +15,17 @@ public class Circle {
     private double y;
     @JsonProperty("r")
     private double r;
+    @JsonProperty("out")
+    private boolean isOut;
+    @JsonProperty("exit_time")
+    private double exit;
 
-    public Circle(double x, double y, double r) {
+    public Circle(double x, double y, double r, boolean isOut, double exit) {
         this.x = x;
         this.y = y;
         this.r = r;
+        this.isOut = isOut;
+        this.exit = exit;
     }
 
     public Circle() {
@@ -47,6 +53,22 @@ public class Circle {
 
     public void setR(double r) {
         this.r = r;
+    }
+
+    public boolean isOut() {
+        return isOut;
+    }
+
+    public void setOut(boolean out) {
+        isOut = out;
+    }
+
+    public double getExit() {
+        return exit;
+    }
+
+    public void setExit(double exit) {
+        this.exit = exit;
     }
 
     public String xyz() {

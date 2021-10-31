@@ -9,6 +9,8 @@ public class Person implements Cloneable{
     private Vector x;
     private double vd;
     private double r;
+    private boolean out;
+    private double t_out = -1;
 
     public Person(double id,Vector x, Versor e, double r,double vd) {
         this.id = id;
@@ -16,6 +18,7 @@ public class Person implements Cloneable{
         this.e = e;
         this.r = r;
         this.vd = vd;
+        this.out = false;
     }
 
     public double getId() {
@@ -53,13 +56,29 @@ public class Person implements Cloneable{
         this.r = r;
     }
 
+    public boolean isOut() {
+        return out;
+    }
+
+    public void setOut(boolean out) {
+        this.out = out;
+    }
+
+    public double getT_out() {
+        return t_out;
+    }
+
+    public void setT_out(double t_out) {
+        this.t_out = t_out;
+    }
+
     public void updatePosition (double x, double y) {
         this.x.setX(x);
         this.x.setY(y);
     }
 
     public Circle getAsCircle(){
-        return new Circle(x.getX(), x.getY(), r);
+        return new Circle(x.getX(), x.getY(), r,out,t_out);
     }
 
 
