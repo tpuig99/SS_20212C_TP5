@@ -75,12 +75,13 @@ public class SimulationImpl implements Simulation {
             List<Person> collisions = cr.calculateParticleCollision(person, personlist);
             if(collisions.size() == 0){
                 cr.updateVelocityIfNotCollision(person);
-                cr.updatePosition(person, dt);
                 cr.updateRadiusIfNotCollision(person, dt);
+                cr.updatePosition(person, dt);
+
             }else{
                 cr.updateVelocityInCollisionWithPersons(person, collisions);
-                cr.updatePosition(person, dt);
                 cr.updateRadiusInCollisionWithPerson(person);
+                cr.updatePosition(person, dt);
             }
         }
         personlist = newPersonList;

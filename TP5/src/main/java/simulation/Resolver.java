@@ -105,19 +105,28 @@ public class Resolver {
         }
         Wall checkX = checkCollisionInX(p1);
         if(checkX == Wall.R){
-            collisions.add(new Person(p1.getId(),new Vector(conds.getLx(),p1.getX().getY()),new Versor(0,0),0,0));
+            collisions.add(new Person(-1,new Vector(conds.getLx(),p1.getX().getY()),new Versor(0,0),0,0));
         } else if(checkX == Wall.L){
-            collisions.add(new Person(p1.getId(),new Vector(0,p1.getX().getY()),new Versor(0,0),0,0));
+            collisions.add(new Person(-2,new Vector(0,p1.getX().getY()),new Versor(0,0),0,0));
         }
 
         Wall checkY = checkCollisionInY(p1);
         if(checkY == Wall.B){
-            collisions.add(new Person(p1.getId(),new Vector(p1.getX().getX(),conds.getLy()/2),new Versor(0,0),0,0));
+            collisions.add(new Person(-3,getVectorForGapCollision(p1),new Versor(0,0),0,0));
         } else if(checkY == Wall.T){
-            collisions.add(new Person(p1.getId(),new Vector(p1.getX().getX(),0),new Versor(0,0),0,0));
+            collisions.add(new Person(-4,new Vector(p1.getX().getX(),0),new Versor(0,0),0,0));
         }
         return collisions;
     }
+
+    private Vector getVectorForGapCollision(Person p1) {
+        double xe1 = (conds.getLx()/2 - gap/2);
+        double xe2 = (conds.getLx()/2 + gap/2);
+        if(p1.getX().getX() < xe1 || p1.getX().getX() > xe2)
+            return new Vector(p1.getX().getX(),conds.getLy()/2);
+        return p1.getX().getX() < conds.getLx()/2 ? new Vector(xe1,conds.getLy()/2) : new Vector(xe2,conds.getLy()/2);
+    }
+
     private Wall checkCollisionInX(Person p1) {
         if(conds.getLx() - p1.getX().getX() < p1.getR()){
             return Wall.R;
