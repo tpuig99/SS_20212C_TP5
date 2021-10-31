@@ -47,13 +47,15 @@ var c = canvas.getContext('2d');
 //----------------buttons-----------------------
 
 document.getElementById('plus-btn').addEventListener("click", function() {
-    framerate = framerate * 2;
+    // framerate = framerate * 2;
+    framerate = framerate + 5;
     frameSize =  1/framerate;
     init();
 });
 
 document.getElementById('minus-btn').addEventListener("click", function() {
-    framerate = framerate / 2;
+    // framerate = framerate / 2;
+    framerate = framerate - 5;
     frameSize =  1/framerate;
     init();
 });
@@ -90,13 +92,17 @@ var circleArray = [];
 let frames = 1
 let curr_frame = 0
 let requestID = null
-let framerate = 10000
+let framerate = 100
 let frameSize =  1/framerate
 let time = 0
 let lastTime = time
 let valid = true;
 
 function init(){
+
+    if(requestID){
+        clearTimeout(requestID)
+    }
 
     document.getElementById('speed-input').value = framerate;
     
@@ -139,7 +145,8 @@ function animate(){
             let currCircle = simulation.events[curr_frame].circles[j]
             circleArray[j].update(currCircle.x * scale, currCircle.y * scale, currCircle.r * scale)
         }
-        requestID = requestAnimationFrame(animate);
+        //requestID = requestAnimationFrame(animate);
+        requestID = setTimeout(animate,framerate);
     } else{
         while(time < lastTime + frameSize){
             if(curr_frame < simulation.events.length-1){
@@ -164,13 +171,15 @@ function animate(){
     
     
         if(frames > 0){
-            requestID = requestAnimationFrame(animate);
+            // requestID = requestAnimationFrame(animate);
+            requestID = setTimeout(animate,framerate);
         }else{
             frames = simulation.events.length-1;
             curr_frame = 0;
             time = 0
             lastTime = 0
-            requestID =requestAnimationFrame(animate);
+            // requestID =requestAnimationFrame(animate);
+            requestID = setTimeout(animate,framerate);
             valid = true
         }
     }
