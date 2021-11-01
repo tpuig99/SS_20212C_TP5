@@ -39,6 +39,8 @@ def plotAcum():
 
 	x = []
 	y = []
+	q = []
+	q_x = []
 
 	for i in range(len(y_axis)):
 		if len(y_axis[i]) > 0:
@@ -46,15 +48,22 @@ def plotAcum():
 			y.append(np.mean(y_axis[i]))
 			errors.append(np.std(y_axis[i]))
 
-	# for i in range(len(y)):
-	# 	if i > 0:
-	# 		aux = (x[i] - x[i-1]) / (y[i] - y[i-1])
-	# 		print('Q = ', aux)
+	sample = 10;
+	for i in range(len(x) - sample):
+		q.append( sample / ( y[sample + i] - y[i] ) )
+		q_x.append( y[i] )		
 
 	plt.plot(y, x, 'r.')
 	plt.errorbar(y, x, xerr=errors, fmt=' ', color='black')
 	plt.grid(b=True, which='both', axis='both')
 	plt.ylabel('Cantidad de Partículas que Salieron')
+	plt.xlabel('Tiempo (s)')
+	plt.show()
+
+
+	plt.plot(q_x, q, 'r.-')
+	plt.grid(b=True, which='both', axis='both')
+	plt.ylabel('Caudal')
 	plt.xlabel('Tiempo (s)')
 	plt.show()
 

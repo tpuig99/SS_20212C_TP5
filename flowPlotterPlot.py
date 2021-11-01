@@ -22,9 +22,9 @@ def parseArgs():
 def plotAcum():
 	data = np.genfromtxt(fileName, delimiter=",", names=["t", "deltaN", "acumN"])
 
-	plt.plot(data['t'], data['acumN'],'r.-')
+	plt.plot(data['t'], data['acumN'],'r.')
 	plt.grid(b=True, which='both', axis='both')
-	plt.ylabel('Cantidad de Partículas que Salieron')
+	plt.ylabel('Cantidad de Agentes que Salieron')
 	plt.xlabel('Tiempo (s)')
 	plt.show()
 
