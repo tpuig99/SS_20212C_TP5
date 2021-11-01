@@ -17,7 +17,7 @@ def calculateOptimalB():
 	min_B = -1
 	min_error = 100000
 
-	for B in np.arange(-7, 10, 0.01):
+	for B in np.arange(-7, 10, 0.001):
 		error = 0
 		for x in range(0, 4):
 			experimentalValue = Qs[x]
