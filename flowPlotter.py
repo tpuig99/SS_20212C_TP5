@@ -29,7 +29,7 @@ def parseFlow():
 	ts = []
 	deltaNs = []
 	acumNs = []
-	dt = 1 # cambia cada cuanto se printea una nueva row
+	dt = 0.0375 # cambia cada cuanto se printea una nueva row
 
 	iter = 0
 	dt_deltaN = 0
