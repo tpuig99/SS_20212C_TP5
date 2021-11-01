@@ -92,12 +92,12 @@ var circleArray = [];
 let frames = 1
 let curr_frame = 0
 let requestID = null
-let framerate = 30
+let framerate = 15
 let frameSize =  1/framerate
 let time = 0
 let lastTime = time
 let valid = true;
-
+ 
 function init(){
 
     if(requestID){
